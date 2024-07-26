@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "belo_horizonte_estate_pricing"
+version = "0.1.0"
+description = "DataScience project using MLOps methodologies to create a real estate pricing for the city of Belo Horizinte, Brazil."
+authors = ["QuentinElGuay <33553005+QuentinElGuay@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.2"
+seaborn = "^0.13.2"
+mlflow = "2.14.2"
+scikit-learn = "^1.5.1"
+
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+ipykernel = "^6.29.5"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
