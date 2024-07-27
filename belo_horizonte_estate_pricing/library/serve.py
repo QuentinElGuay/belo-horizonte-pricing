@@ -9,7 +9,7 @@ from pandas import DataFrame
 from sklearn.pipeline import Pipeline
 
 
-def predict_batch(X: DataFrame, pipeline:Pipeline) -> DataFrame:
+def predict_batch(X: DataFrame, pipeline: Pipeline) -> DataFrame:
     """Predict the target variable for a batch of data.
 
     Args:
@@ -24,7 +24,7 @@ def predict_batch(X: DataFrame, pipeline:Pipeline) -> DataFrame:
     return expm1(pred)
 
 
-def predict_single(features: Dict[str, Any], pipeline:Pipeline) -> float:
+def predict_single(features: Dict[str, Any], pipeline: Pipeline) -> float:
     """Predict the target variable for a single data point.
 
     Args:

@@ -22,10 +22,12 @@ def read_csv(file_path: str) -> pd.DataFrame:
 
     df = pd.read_csv(
         file_path,
-        encoding="utf-8",
-        dtype={'rooms': str, 'square-foot': str, 'garage-places': str}
+        encoding='utf-8',
+        dtype={'rooms': str, 'square-foot': str, 'garage-places': str},
+        skipinitialspace=True,
     )
 
+    logger.info(f'Number of rows for dataset %s is %s', file_path, len(df))
     return df
 
 
@@ -40,13 +42,15 @@ def standardize_column_names(df: pd.DataFrame) -> pd.DataFrame:
     """
     df.rename(
         columns={col: col.replace('-', '_').lower() for col in df.columns},
-        inplace=True
+        inplace=True,
     )
 
     return df
 
 
-def convert_numeric_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFrame:
+def convert_numeric_columns(
+    df: pd.DataFrame, columns: List[str]
+) -> pd.DataFrame:
     """Convert columns to numeric type.
 
     Args:
@@ -59,7 +63,7 @@ def convert_numeric_columns(df: pd.DataFrame, columns: List[str]) -> pd.DataFram
         df[df[column].str.contains('-')][column].apply(
             lambda v: str(round(int(v.split('-')[1]) / 2))
         )
-        df[column] = pd.to_numeric(df[column], errors="coerce")
+        df[column] = pd.to_numeric(df[column], errors='coerce')
 
     return df
 
@@ -89,25 +93,40 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
 
     df.reset_index(drop=True, inplace=True)
 
-        # filter outliers
+    # filter outliers
     df = df[df.price.between(1e5, 4e6)]
-    df['square_foot_price'] = (df.price / df.square_foot)
-    df = df[df.square_foot_price.between(
-        df.square_foot_price.quantile(0.01),
-        df.square_foot_price.quantile(0.99))
+    df['square_foot_price'] = df.price / df.square_foot
+    df = df[
+        df.square_foot_price.between(
+            df.square_foot_price.quantile(0.01),
+            df.square_foot_price.quantile(0.99),
+        )
     ]
 
-    # df['rooms'] = df.rooms.apply(lambda x: int(x) if x < 5 else 5)
-    # df['garage_places'] = df.garage_places.apply(lambda x: int(x) if x < 5 else 5)
-    df = df[(df.rooms <= 6) & (df.garage_places <= 6) & (df.square_foot <= 1000)]
+    df = df[
+        (df.rooms <= 6) & (df.garage_places <= 6) & (df.square_foot <= 1000)
+    ]
 
-    scaler = StandardScaler()
-    df['square_foot'] = scaler.fit_transform(df[['square_foot']])
+    # scaler = StandardScaler()
+    # df['square_foot'] = scaler.fit_transform(df[['square_foot']])
 
-    return df
+    categorical = ['neighborhood']
+    df[categorical] = df[categorical].astype(str)
+
+    logger.info(f'Number of rows for cleaned dataset is %s', len(df))
+
+    variables = {
+        'target': 'price',
+        'categorical': ['neighborhood'],
+        'numerical': ['square_foot', 'garage_places', 'rooms'],
+    }
+
+    return df, variables
 
 
-def split_test_datase(df: pd.DataFrame, test_size:float, random_state:int) -> Tuple[pd.DataFrame]:
+def split_test_datase(
+    df: pd.DataFrame, test_size: float, random_state: int
+) -> Tuple[pd.DataFrame]:
     """Split the dataset into training and test datasets.
 
     Args:
@@ -117,9 +136,11 @@ def split_test_datase(df: pd.DataFrame, test_size:float, random_state:int) -> Tu
         pandas.DataFrame: A cleaned DataFrame.
     """
     X_train, X_test, y_train, y_test = train_test_split(
-        df, test_size=0.2, random_state=random_state)
-    
+        df, test_size=0.2, random_state=random_state
+    )
+
     return pd.concat(X_train, y_train), pd.concat(X_test, y_test)
+
 
 def get_dataset(file_path: str) -> pd.DataFrame:
     """Read and clean the dataset file for the training process.

@@ -20,7 +20,7 @@ services:
     networks:
       - backend
     volumes:
-        - ./db_data:/var/lib/mysql
+        - db_data:/var/lib/mysql
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_PASSWORD
       start_period: 5s
@@ -32,8 +32,8 @@ services:
     restart: always
     image: minio/minio
     container_name: mlflow_s3
-    # volumes:
-    #   - ./minio_data:/data
+    volumes:
+      - minio_data:/data
     ports:
       - "${MINIO_PORT}:9000"
       - "${MINIO_CONSOLE_PORT}:9001"

@@ -11,31 +11,27 @@ from sklearn.base import BaseEstimator
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.metrics import  root_mean_squared_error
+from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 
 logger = logging.getLogger(__name__)
 
 
-def tag_run(
-        dataset:mlflow.data.pandas_dataset.PandasDataset,
-        estimator:BaseEstimator,
-        user:str='Quentin El Guay'
-    ):
+def tag_run(user: str = 'Quentin El Guay'):
     """Tag the run with the estimator name and class.
 
     Args:
-        estimator_class (str): Class of the estimator to tag.
+        dataset: The dataset used to train the model.
         user (str): User who trained the model.
     """
-    mlflow.set_tags(_get_estimator_info_tags(estimator))
-    mlflow.set_tag('user', user)
-
-    mlflow.log_input(dataset, context='training')
+    mlflow.set_tags({'user': user})
+    # mlflow.log_input(dataset, context='training')
 
 
-def train_simple_linear_regression(X:pd.DataFrame, y:pd.DataFrame) -> Pipeline:
+def train_simple_linear_regression(
+    X: pd.DataFrame, y: pd.DataFrame
+) -> Pipeline:
     """Train a  simple linear regression model on the given data.
 
     Args:
@@ -45,64 +41,43 @@ def train_simple_linear_regression(X:pd.DataFrame, y:pd.DataFrame) -> Pipeline:
     Returns:
         sklearn.pipeline.Pipeline: Trained linear regression model with DictVectorizer.
     """
+    # dataset = mlflow.data.from_pandas(
+    #     pd.concat([X, y]),
+    #     source='https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte',
+    #     name='House Pricing in Belo Horizonte',
+    #     targets='price'
+    # )
 
-    dataset = mlflow.data.from_pandas(
-        pd.concat([X, y]),
-        source='https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte',
-        name='House Pricing in Belo Horizonte',
-        targets='price'
-    )
-
-    MODEL_NAME = 'sklearn-linear-regression'
     regressor = LinearRegression()
 
     X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=0.2, random_state=42)
-    
-    pipeline = Pipeline([
-        ('vectorizer', DictVectorizer()),
-        ('lr', TransformedTargetRegressor(
-            regressor=regressor,
-            func=np.log1p,
-            inverse_func=np.expm1)
-        )
-    ])
+        X.to_dict('records'), y.values, test_size=0.2, random_state=42
+    )
 
     with mlflow.start_run(run_name='Simple Linear Regression'):
 
-        tag_run(dataset, regressor)
-        
-        pipeline.fit(X_train.to_dict('records'), y_train)
+        tag_run()
 
-        y_pred = pipeline.predict(X_val.to_dict('records'))
+        pipeline = make_pipeline(
+            DictVectorizer(sparse=False, dtype=int),
+            TransformedTargetRegressor(
+                regressor=regressor, func=np.log1p, inverse_func=np.expm1
+            ),
+        )
+
+        pipeline.fit(X_train, y_train)
+
+        y_pred = pipeline.predict(X_val)
 
         metrics = {
-            'rmse': root_mean_squared_error(y_val, y_pred)
+            'rmse': root_mean_squared_error(y_val, y_pred),
+            'score': pipeline.score(X_val, y_val),
         }
-
         mlflow.log_metrics(metrics)
 
-        os.makedirs('models', exist_ok=True)
-        with open('models/lin_reg.bin', 'wb') as f_out:
-            pickle.dump(pipeline, f_out)
+        run_model = mlflow.sklearn.log_model(pipeline, 'model')
 
-
-        signature = mlflow.models.infer_signature(
-            X_val.to_dict('records'),
-            pipeline.predict(X_val.to_dict('records'))
-        )
-
-        log_model_result = mlflow.sklearn.log_model(
-            sk_model=pipeline,
-            artifact_path='model',
-            signature=signature,
-            input_example=X_train,
-            registered_model_name=MODEL_NAME,
-        )
-
-        logger.info(log_model_result)
-
-    return pipeline
+    return run_model.model_uri
 
 
 # def train_regularized_regression(X:DataFrame, y:DataFrame, num_trials:int=50) -> Pipeline:
@@ -120,7 +95,7 @@ def train_simple_linear_regression(X:pd.DataFrame, y:pd.DataFrame) -> Pipeline:
 
 #     X_train, X_val, y_train, y_val = train_test_split(
 #         X, y, test_size=0.2, random_state=42)
-    
+
 #     dv = DictVectorizer()
 #     X_train = dv.fit_transform(X_train.to_dict('records'))
 #     X_val = dv.transform(X_val.to_dict('records'))
@@ -129,7 +104,7 @@ def train_simple_linear_regression(X:pd.DataFrame, y:pd.DataFrame) -> Pipeline:
 
 #         model_name, model_class = params.pop('model')
 #         model = model_class(**params)
-        
+
 #         with mlflow.start_run(run_name=f'{model_name} Optimization', nested=True):
 #             mlflow.log_params(params)
 
@@ -158,6 +133,6 @@ def train_simple_linear_regression(X:pd.DataFrame, y:pd.DataFrame) -> Pipeline:
 #             rstate=np.random.default_rng(42)
 #         )
 
-        # Register the best model
-        # register_best_model(client, top_n)
-        # Logger.info("Optimization completed successfully.")
+# Register the best model
+# register_best_model(client, top_n)
+# Logger.info("Optimization completed successfully.")
