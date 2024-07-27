@@ -40,7 +40,7 @@ This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https
 **Best practices:**
 - [ ] There are unit tests (1 point)
 - [ ] There is an integration test (1 point)
-- [ ] Linter and/or code formatter are used (1 point): execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
+- [x] Linter and/or code formatter are used (1 point): execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
 - [ ] There's a Makefile (1 point)
 - [ ] There are pre- [ ]commit hooks (1 point)
 - [ ] There's a CI/CD pipeline (2 points)
