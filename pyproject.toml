@@ -5,7 +5,7 @@ description = "DataScience project using MLOps methodologies to create a real es
 authors = ["QuentinElGuay <33553005+QuentinElGuay@users.noreply.github.com>"]
 readme = "README.md"
 packages = [
-    { include = "belo_horizonte_estate_pricing" }
+    { include = "library", from = "library" }
 ]
 
 [tool.poetry.dependencies]
