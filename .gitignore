@@ -164,5 +164,8 @@ cython_debug/
 # VSCODE
 .vscode/
 
-#AWS-SAM
+# AWS-SAM
 .aws-sam/
+
+# MlFlow
+mlrun/
