@@ -7,7 +7,7 @@ from pandas import DataFrame
 
 import mlflow
 
-from belo_horizonte_estate_pricing.library.dataset import (
+from library.dataset import (
     convert_numeric_columns,
     prepare_features,
 )

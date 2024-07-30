@@ -227,7 +227,7 @@ def prepare_features(X: Dict[str, Any] | pd.DataFrame) -> Dict[str, Any]:
     else:
         raise ValueError(
             'X must be a feature dictionary or a pandas DataFrame and not a %s.',
-            type(X)
+            type(X),
         )
 
     df = convert_numeric_columns(df, NUMERIC_COLUMNS)

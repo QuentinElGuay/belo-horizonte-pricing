@@ -1,7 +1,7 @@
 import pytest
 from pandas.api.types import is_numeric_dtype
 
-from belo_horizonte_estate_pricing.library import dataset
+from library import dataset
 
 
 @pytest.fixture

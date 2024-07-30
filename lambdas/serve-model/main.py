@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 import mlflow
 
-from belo_horizonte_estate_pricing.library.serve import predict
+from library.serve import predict
 
 
 def main(model_name: str, inputs: Dict[str, Any]):
