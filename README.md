@@ -54,9 +54,12 @@ This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https
 - [ ] 4 points: Instructions are clear, it's easy to run the code, and it works. The versions for all the dependencies are specified.
 
 **Best practices:**
-- [ ] There are unit tests (1 point)
+- [x] There are unit tests (1 point):
+    - The coverage isn't yet complete but you can run `pytest` to execute some unit tests.
 - [ ] There is an integration test (1 point)
-- [x] Linter and/or code formatter are used (1 point): execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
+- [x] Linter and/or code formatter are used (1 point)
+    - Execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
+    - Execute `poetry run isort .` to use the `isort`.
 - [ ] There's a Makefile (1 point)
 - [ ] There are pre- [ ]commit hooks (1 point)
 - [ ] There's a CI/CD pipeline (2 points)

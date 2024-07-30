@@ -1,19 +1,19 @@
 # from hyperopt import fmin, tpe, hp, STATUS_OK, Trials
 # from hyperopt.pyll import scope
 import logging
-import os
-import mlflow
-from mlflow.sklearn.utils import _get_estimator_info_tags
+
 import numpy as np
 import pandas as pd
-import pickle
+from mlflow.sklearn.utils import _get_estimator_info_tags
 from sklearn.base import BaseEstimator
 from sklearn.compose import TransformedTargetRegressor
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
+from sklearn.linear_model import Lasso, LinearRegression, Ridge
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline, make_pipeline
+
+import mlflow
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +59,13 @@ def train_simple_linear_regression(
         tag_run()
 
         pipeline = make_pipeline(
-            DictVectorizer(sparse=False, dtype=int),
+            DictVectorizer(sparse=True, dtype=int),
             TransformedTargetRegressor(
                 regressor=regressor, func=np.log1p, inverse_func=np.expm1
             ),
         )
 
         pipeline.fit(X_train, y_train)
-
         y_pred = pipeline.predict(X_val)
 
         metrics = {

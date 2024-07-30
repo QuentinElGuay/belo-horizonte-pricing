@@ -1,16 +1,13 @@
-from os import getenv
 import logging
+from os import getenv
 from typing import Dict
-from matplotlib import pyplot as plt
-import mlflow
-import numpy as np
-from sklearn.metrics import root_mean_squared_error
-from sklearn.model_selection import train_test_split
 
-from library.dataset import get_dataset
-from library.train import (
-    train_simple_linear_regression,
-)  ##, train_regularized_regression
+import numpy as np
+from library.dataset import get_dataset, split_test_datase
+from library.serve import predict
+from library.train import train_simple_linear_regression
+
+import mlflow
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +24,16 @@ def main(experiment_name: str, dataset_path: str):
     df, variables = get_dataset(dataset_path)
 
     # Split the original dataset in training and test datasets for future test.
-    X_train, X_test, y_train, y_test = train_test_split(
-        df[variables['numerical'] + variables['categorical']],
-        df[variables['target']],
-        test_size=0.2,
-        random_state=RANDOM_STATE,
-    )
+    df_train, df_test = split_test_datase(df, 0.2, RANDOM_STATE)
 
+    categorical_features = variables['categorical']
+    numerical_features = variables['numerical']
+    target = variables['target']
+
+    X_train = df_train[categorical_features + numerical_features]
+    y_train = df_train[target]
+
+    # Start experience
     mlflow.set_tracking_uri(TRACKING_SERVER_URI)
     mlflow.set_experiment(experiment_name)
     logger.info('Starting experiment %s', experiment_name)
@@ -56,10 +56,6 @@ def main(experiment_name: str, dataset_path: str):
         model_uri=model_uri, name=MODEL_NAME
     )
 
-    # Load model
-    model_uri = f'models:/{MODEL_NAME}/{registered_model.version}'
-    model = mlflow.pyfunc.load_model(model_uri=model_uri)
-
     # Predict
     inputs = {
         'neighborhood': 'Buritis',
@@ -70,16 +66,16 @@ def main(experiment_name: str, dataset_path: str):
 
     def prepare_features(inputs: Dict[str, str | int | float]):
         features = {}
-        features['neighborhood'] = str(inputs['neighborhood'])
-        features['square_foot'] = inputs['square-foot']
-        features['rooms'] = inputs['rooms']
-        features['garage_places'] = inputs['garage-places']
+        features['neighborhood'] = [str(inputs['neighborhood'])]
+        features['square_foot'] = [inputs['square-foot']]
+        features['rooms'] = [inputs['rooms']]
+        features['garage_places'] = [inputs['garage-places']]
         return features
 
-    preds = model.predict(prepare_features(inputs))
+    estate = prepare_features(inputs)
 
-    # y_pred = model.predict(X_test.to_dict('records'))
-    # logger.info('RMSE on the test dataset: %s', root_mean_squared_error(y_test, y_pred))
+    model_uri = f'models:/{MODEL_NAME}/{registered_model.version}'
+    predict(estate, model_uri)
 
 
 if __name__ == '__main__':
