@@ -6,11 +6,7 @@ from numpy import ndarray
 from pandas import DataFrame
 
 import mlflow
-
-from library.dataset import (
-    convert_numeric_columns,
-    prepare_features,
-)
+from library.dataset import convert_numeric_columns, prepare_features
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +58,7 @@ def predict(model_name: str, X: Dict[str, Any] | DataFrame) -> ndarray:
     """
     X = prepare_features(X)
 
-    model_uri = f'models:/{model_name}/8'
+    model_uri = f'models:/{model_name}@champion'
     try:
         model = mlflow.pyfunc.load_model(model_uri)
 

@@ -3,11 +3,11 @@ from os import getenv
 from typing import Dict
 
 import numpy as np
-from library.dataset import get_dataset, split_test_datase
-from library.serve import predict
-from library.train import train_simple_linear_regression
 
 import mlflow
+from library.dataset import get_dataset, split_test_dataset
+from library.serve import predict
+from library.train import train_simple_linear_regression
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +24,7 @@ def main(experiment_name: str, dataset_path: str):
     df, variables = get_dataset(dataset_path)
 
     # Split the original dataset in training and test datasets for future test.
-    df_train, df_test = split_test_datase(df, 0.2, RANDOM_STATE)
-
-    categorical_features = variables['categorical']
-    numerical_features = variables['numerical']
-    target = variables['target']
-
-    X_train = df_train[categorical_features + numerical_features]
-    y_train = df_train[target]
+    df_train, df_test = split_test_dataset(df, 0.2, RANDOM_STATE)
 
     # Start experience
     mlflow.set_tracking_uri(TRACKING_SERVER_URI)
@@ -39,7 +32,7 @@ def main(experiment_name: str, dataset_path: str):
     logger.info('Starting experiment %s', experiment_name)
 
     # Train model(s)
-    model_uri = train_simple_linear_regression(X_train, y_train)
+    model_uri = train_simple_linear_regression(df_train, variables)
 
     # Register best run model
     best_rmse_runs = mlflow.search_runs(
@@ -56,26 +49,21 @@ def main(experiment_name: str, dataset_path: str):
         model_uri=model_uri, name=MODEL_NAME
     )
 
+    registered_model = mlflow.register_model(
+        model_uri=model_uri, name=MODEL_NAME, tags=[]
+    )
+
     # Predict
     inputs = {
+        'admin-fee': 0.0,
         'neighborhood': 'Buritis',
         'square-foot': 102.0,
         'rooms': 3.0,
         'garage-places': 2.0,
     }
 
-    def prepare_features(inputs: Dict[str, str | int | float]):
-        features = {}
-        features['neighborhood'] = [str(inputs['neighborhood'])]
-        features['square_foot'] = [inputs['square-foot']]
-        features['rooms'] = [inputs['rooms']]
-        features['garage_places'] = [inputs['garage-places']]
-        return features
-
-    estate = prepare_features(inputs)
-
     model_uri = f'models:/{MODEL_NAME}/{registered_model.version}'
-    predict(estate, model_uri)
+    predict(registered_model.name, inputs)
 
 
 if __name__ == '__main__':

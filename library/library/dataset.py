@@ -180,7 +180,7 @@ def get_dataset(file_path: str) -> Tuple[pd.DataFrame, Dict[str, str]]:
     return df, variables
 
 
-def split_test_datase(
+def split_test_dataset(
     df: pd.DataFrame, test_size: float, random_state: int
 ) -> Tuple[pd.DataFrame]:
     """Split the dataset into training and test datasets.
@@ -195,17 +195,17 @@ def split_test_datase(
         Tuple[pd.DataFrame]: The training and test datasets.
     """
     logger.info('Splitting the dataset')
-    X_train, X_test = train_test_split(
+    df_train, df_test = train_test_split(
         df, test_size=test_size, random_state=random_state
     )
 
     logger.info(
         '   Split the dataset into datasets of %s and %s rows.',
-        len(X_train),
-        len(X_test),
+        len(df_train),
+        len(df_test),
     )
 
-    return X_train, X_test
+    return df_train, df_test
 
 
 def prepare_features(X: Dict[str, Any] | pd.DataFrame) -> Dict[str, Any]:
@@ -230,6 +230,6 @@ def prepare_features(X: Dict[str, Any] | pd.DataFrame) -> Dict[str, Any]:
             type(X),
         )
 
-    df = convert_numeric_columns(df, NUMERIC_COLUMNS)
+    df = convert_numeric_columns(standardize_column_names(df), NUMERIC_COLUMNS)
 
-    return df.to_dict(orient='records')
+    return df

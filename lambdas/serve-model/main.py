@@ -3,7 +3,6 @@ from os import getenv
 from typing import Any, Dict
 
 import mlflow
-
 from library.serve import predict
 
 
@@ -24,7 +23,7 @@ def main(model_name: str, inputs: Dict[str, Any]):
 
 if __name__ == '__main__':
 
-    model_name = 'belo_horizonte_estate_pricing'
+    MODEL_NAME = 'belo_horizonte_price_regression'
     inputs = {
         'adm_fees': '',
         'neighborhood': 'Miramar',
@@ -33,4 +32,4 @@ if __name__ == '__main__':
         'garage_places': '--',
     }
 
-    main(model_name, inputs)
+    main(MODEL_NAME, inputs)

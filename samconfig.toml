@@ -4,7 +4,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "belo_horizonte_estate_pricing"
+stack_name = "belo-horizonte-estate-pricing"
 
 [default.build.parameters]
 cached = true
