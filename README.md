@@ -29,8 +29,30 @@ The process we want to implement in this project is the following:
 ### About this particular project
 I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. This dataset is _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is however not really a problem since the main goal of this project is to demonstrate the MLOps methodologies rather than pure Machine Learning technics.
 
+Applying the previously described process, our project is to to the following:
+1. Experimentation phase:
+    1. Get a 2021 dataset from Kaggle (scrapped data).
+    2. Run an exploratory data analysis in a Jupyter Notebook.
+    3. Run experiments in a Jupyter Notebook to select the first production model.
+2. Deployment in production:
+    1. Deploy the model in AWS Lambda.
+    2. Create a REST API (AWS API Gateway) to call the model and predict the estate value.
+3. Feedback loop:
+    1. Since we don't have real call, we'll get recent values to simulate our training set with data shift.
+    2. Automatically run the experiment training process using AWS Step Functions calling AWS Lambda Functions.
+    3. Promote the new best model.
+
 ## Install the project
-TODO
+The following tools are used to run the project locally, please follow the links for installation instructions:
+1. This project uses [Poetry](https://python-poetry.org/docs/) to manage it's dependency. Then, from the project folder root, run:
+```
+poetry install --with dev,test
+```
+2. We use [Docker](https://docs.docker.com/engine/install/) to run our code locally in containers and upload images. To run our process, services like our `MLFlow Tracker Server`, a `MySQL` database and [MinIO](https://min.io/) (an AWS S3 manager) ran using `docker compose`. To start them, from the project folder root, run:
+```
+docker compose up
+```
+3. Finally, we use [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) to simulate the AWS services locally (AWS Lambda, API Gateway).
 
 ## Run the project
 TODO
