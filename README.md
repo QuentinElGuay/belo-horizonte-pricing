@@ -38,7 +38,7 @@ Applying the previously described process, our project is to to the following:
     1. Deploy the model in AWS Lambda.
     2. Create a REST API (AWS API Gateway) to call the model and predict the estate value.
 3. Feedback loop:
-    1. Since we don't have real call, we'll get recent values to simulate our training set with data shift.
+    1. Since we don't have real API calls, we'll get recent values to simulate our training set with data shift due to the estate inflation since 2021.
     2. Automatically run the experiment training process using AWS Step Functions calling AWS Lambda Functions.
     3. Promote the new best model.
 
