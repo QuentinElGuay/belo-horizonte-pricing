@@ -9,21 +9,21 @@ According to [Databricks](https://www.databricks.com/glossary/mlops), _"MLOps st
 The process we want to implement in this project is the following:
 
 1. Experimentation phase:
-    i. Comes a first dataset, analyzed and cleand by a data scientist.
-    ii. The data scientist runs multiples experiments to find the best possible model:
-        a. Split the dataset in two to keep a test dataset used to decide between the challengers.
-        b. Run experiments on the training set (algorithm and optimization) using the `MLFlow Tracking Server` to store the results.
-        c. Select the best candidates and apply them to the test dataset.
-        d. Register the best candidate in the `MLFlow Model Registery` as current champion (model tu use in production).
+    1. Comes a first dataset, analyzed and cleand by a data scientist.
+    2. The data scientist runs multiples experiments to find the best possible model:
+        1. Split the dataset in two to keep a test dataset used to decide between the challengers.
+        2. Run experiments on the training set (algorithm and optimization) using the `MLFlow Tracking Server` to store the results.
+        3. Select the best candidates and apply them to the test dataset.
+        4. Register the best candidate in the `MLFlow Model Registery` as current champion (model tu use in production).
 2. Deployment in production:
-    i. New values are sent for prediction, either via API or a Batch process.
-    ii. The code calls the model register to load the current production model.
-    iii. Results are returned to the user and stored for monitoring.
+    1. New values are sent for prediction, either via API or a Batch process.
+    2. The code calls the model register to load the current production model.
+    3. Results are returned to the user and stored for monitoring.
 3. Feedback loop:
-    i. On scheduled dates or when a datashift is detected, create a new dataset using recente predictions and actual values.
-    ii. Execute the model training process automatically using the new dataset (see 1.).
-    iii. Compare the result of the current model in production with the new champion.
-    iv. Promote (automatically or not) the new champion if required.
+    1. On scheduled dates or when a datashift is detected, create a new dataset using recente predictions and actual values.
+    2. Execute the model training process automatically using the new dataset (see 1.).
+    3. Compare the result of the current model in production with the new champion.
+    4. Promote (automatically or not) the new champion if required.
 
 ![The illustrated flow of an MLOps project](docs/pictures/mlops.jpg "MLOps Flow")
 
