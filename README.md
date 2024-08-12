@@ -7,6 +7,7 @@ According to [Databricks](https://www.databricks.com/glossary/mlops), _"MLOps st
 
 ### The MLOps process
 The process we want to implement in this project is the following:
+![The illustrated flow of an MLOps project](docs/pictures/mlops.jpg "MLOps Flow")
 
 1. Experimentation phase:
     1. Comes a first dataset, analyzed and cleand by a data scientist.
@@ -24,8 +25,6 @@ The process we want to implement in this project is the following:
     2. Execute the model training process automatically using the new dataset (see 1.).
     3. Compare the result of the current model in production with the new champion.
     4. Promote (automatically or not) the new champion if required.
-
-![The illustrated flow of an MLOps project](docs/pictures/mlops.jpg "MLOps Flow")
 
 ### About this particular project
 I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. This dataset is _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is however not really a problem since the main goal of this project is to demonstrate the MLOps methodologies rather than pure Machine Learning technics.
