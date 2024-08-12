@@ -5,6 +5,28 @@ This project was developped in the context of the [DataTalks.Club MLOps Zoomcamp
 ### What is MLOps
 According to [Databricks](https://www.databricks.com/glossary/mlops), _"MLOps stands for `Machine Learning Operations` [and focus] on streamlining the process of taking machine learning models to production, and then maintaining and monitoring them"_. In other words, it is a combination of `cultural philosophies`, `good practices` and `tools` inspired from the [DevOps methodologies](https://aws.amazon.com/devops/what-is-devops/) for software and applied to the specif necessities of `Machine Learning` with the intention of increasing an organization’s ability to deliver, then evolve and improve, Machine Learning models at `high velocity` and in a `leaner` way.
 
+### The MLOps process
+The process we want to implement in this project is the following:
+
+1. Experimentation phase:
+    i. Comes a first dataset, analyzed and cleand by a data scientist.
+    ii. The data scientist runs multiples experiments to find the best possible model:
+        a. Split the dataset in two to keep a test dataset used to decide between the challengers.
+        b. Run experiments on the training set (algorithm and optimization) using the `MLFlow Tracking Server` to store the results.
+        c. Select the best candidates and apply them to the test dataset.
+        d. Register the best candidate in the `MLFlow Model Registery` as current champion (model tu use in production).
+2. Deployment in production:
+    i. New values are sent for prediction, either via API or a Batch process.
+    ii. The code calls the model register to load the current production model.
+    iii. Results are returned to the user and stored for monitoring.
+3. Feedback loop:
+    i. On scheduled dates or when a datashift is detected, create a new dataset using recente predictions and actual values.
+    ii. Execute the model training process automatically using the new dataset (see 1.).
+    iii. Compare the result of the current model in production with the new champion.
+    iv. Promote (automatically or not) the new champion if required.
+
+![The illustrated flow of an MLOps project](docs/pictures/mlops.jpg "MLOps Flow")
+
 ### About this particular project
 I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. This dataset is _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is however not really a problem since the main goal of this project is to demonstrate the MLOps methodologies rather than pure Machine Learning technics.
 
