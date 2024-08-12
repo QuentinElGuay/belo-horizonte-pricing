@@ -1,14 +1,12 @@
-FROM python:3.12-slim-bullseye
-
-# Set the working directory in the container
-WORKDIR /app
+FROM public.ecr.aws/lambda/python:3.12
 
 # Install requirements
-COPY requirements.txt .
+COPY lambdas/serve-model/requirements.txt .
 RUN python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Copy source files
-COPY src/lambda.py .
+COPY library/library library/
+COPY lambdas/serve-model/src/lambda.py .
 
-CMD ["/app/lambda.lambda_handler"]
+CMD ["lambda.lambda_handler"]

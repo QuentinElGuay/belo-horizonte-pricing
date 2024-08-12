@@ -17,7 +17,9 @@ def lambda_handler(event, context):
     set_tracking_uri(TRACKING_SERVER_URI)
 
     # TODO: those should be deduced from the event dictionnary
-    MODEL_NAME = 'belo_horizonte_price_regression'
+    MODEL_NAME = getenv(
+        'MODEL_NAME', 'belo_horizonte_price_regression'
+    )
 
     inputs = json.loads(event['body'])
     prediction = predict(MODEL_NAME, inputs)

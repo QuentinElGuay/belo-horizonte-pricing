@@ -25,36 +25,6 @@ Parameters:
     Default: http://mlflow_ui:5000
 
 Resources:
-  # MLOpsLayer:
-  #   Type: AWS::Serverless::LayerVersion
-  #   Properties:
-  #     LayerName: mlops-layer
-  #     Description: Layer containing basic functions for MLOps
-  #     ContentUri: library/
-  #     CompatibleRuntimes:
-  #       - python3.12
-      
-    # Metadata:
-    #   BuildMethod: python3.12
-
-  PrepareDataSetFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures:
-        - x86_64
-      Environment:
-        Variables: 
-          DESTINATION_BUCKET: !Ref DatasetBucketName
-          DESTINATION_FOLDER: !Ref DatasetRootFolder
-          
-      Handler: src.lambda.lambda_handler
-      FunctionName: prepare-dataset
-      PackageType: Image
-    Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: lambdas/prepare-dataset/
-      # DockerTag: python3.12-v1
-
   ServeModelFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -69,12 +39,11 @@ Resources:
           Properties:
             Path: /price
             Method: post
-      Handler: src.lambda.lambda_handler
       FunctionName: serve-model
       PackageType: Image
     Metadata:
-      Dockerfile: Dockerfile
-      DockerContext: lambdas/serve-model/
+      Dockerfile: lambdas/serve-model/Dockerfile
+      DockerContext: ./
 
     # Metadata:
     #   Dockerfile: Dockerfile
