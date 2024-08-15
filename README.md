@@ -9,18 +9,18 @@ According to [Databricks](https://www.databricks.com/glossary/mlops), _"MLOps st
 The process we want to implement in this project is the following:
 ![The illustrated flow of an MLOps project](docs/pictures/mlops.jpg "MLOps Flow")
 
-1. Experimentation phase:
+1. **Experimentation phase:**
     1. Comes a first dataset, analyzed and cleand by a data scientist.
     2. The data scientist runs multiples experiments to find the best possible model:
         1. Split the dataset in two to keep a test dataset used to decide between the challengers.
         2. Run experiments on the training set (algorithm and optimization) using the `MLFlow Tracking Server` to store the results.
         3. Select the best candidates and apply them to the test dataset.
         4. Register the best candidate in the `MLFlow Model Registery` as current champion (model tu use in production).
-2. Deployment in production:
+2. **Deployment in production:**
     1. New values are sent for prediction, either via API or a Batch process.
     2. The code calls the model register to load the current production model.
     3. Results are returned to the user and stored for monitoring.
-3. Feedback loop:
+3. **Feedback loop:**
     1. On scheduled dates or when a datashift is detected, create a new dataset using recente predictions and actual values.
     2. Execute the model training process automatically using the new dataset (see 1.).
     3. Compare the result of the current model in production with the new champion.
@@ -29,15 +29,15 @@ The process we want to implement in this project is the following:
 ### About this particular project
 I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. This dataset is _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is however not really a problem since the main goal of this project is to demonstrate the MLOps methodologies rather than pure Machine Learning technics.
 
-Applying the previously described process, our project is to to the following:
-1. Experimentation phase:
+Applying the previously described process, our project is to do the following:
+1. **Experimentation phase:**
     1. Get a 2021 dataset from Kaggle (scrapped data).
     2. Run an exploratory data analysis in a Jupyter Notebook.
     3. Run experiments in a Jupyter Notebook to select the first production model.
-2. Deployment in production:
+2. **Deployment in production:**
     1. Deploy the model in AWS Lambda.
     2. Create a REST API (AWS API Gateway) to call the model and predict the estate value.
-3. Feedback loop:
+3. **Feedback loop:**
     1. Since we don't have real API calls, we'll get recent values to simulate our training set with data shift due to the estate inflation since 2021.
     2. Automatically run the experiment training process using AWS Step Functions calling AWS Lambda Functions.
     3. Promote the new best model.
@@ -63,8 +63,8 @@ This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https
 ### Self-Evaluation
 **Problem description:**
 - [ ] 0 points: The problem is not described
-- [x] 1 point: The problem is described but shortly or not clearly
-- [ ] 2 points: The problem is well described and it's clear what the problem the project solves
+- [ ] 1 point: The problem is described but shortly or not clearly
+- [x] 2 points: The problem is well described and it's clear what the problem the project solves
 
 **Cloud:**
 - [ ] 0 points: Cloud is not used, things run only locally

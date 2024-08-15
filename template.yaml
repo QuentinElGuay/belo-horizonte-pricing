@@ -25,25 +25,57 @@ Parameters:
     Default: http://mlflow_ui:5000
 
 Resources:
-  ServeModelFunction:
+  MLOpsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: mlops-layer
+      Description: Layer containing basic functions for MLOps
+      ContentUri: library/
+      CompatibleRuntimes:
+        - python3.12
+    Metadata:
+      BuildMethod: python3.12   # Required to have AWS SAM build this layer
+
+  PrepareDatasetFunction:
     Type: AWS::Serverless::Function
     Properties:
+      CodeUri: lambdas/prepare-dataset/
+      Handler: src.lambda.lambda_handler
+      PackageType: Zip
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          DESTINATION_BUCKET: !Ref DatasetBucketName
+          DESTINATION_FOLDER: !Ref DatasetRootFolder
+          AWS_ACCESS_KEY_ID: XeAMQQjZY2pTcXWfxh4H
+          AWS_SECRET_ACCESS_KEY: wyJ30G38aC2UcyaFjVj2dmXs1bITYkJBcx0FtljZ
+          WR_S3_ENDPOINT_URL: http://localhost:9000
+      Layers:
+        - !Ref MLOpsLayer
+        - arn:aws:lambda:sa-east-1:336392948345:layer:AWSSDKPandas-Python312:12
+
+  ServeModelFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambdas/serve-model/
+      Handler: src.lambda.lambda_handler
+      PackageType: Zip
+      Runtime: python3.12
       Architectures:
         - x86_64
       Environment:
         Variables: 
           TRACKING_SERVER_URI: !Ref TrackingServerUri
+      Layers:
+        - !Ref MLOpsLayer
       Events:
         Inference:
-          Type: Api
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /price
             Method: post
-      FunctionName: serve-model
-      PackageType: Image
-    Metadata:
-      Dockerfile: lambdas/serve-model/Dockerfile
-      DockerContext: ./
 
     # Metadata:
     #   Dockerfile: Dockerfile
