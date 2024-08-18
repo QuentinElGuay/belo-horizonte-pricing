@@ -30,7 +30,9 @@ def tag_run(user: str = 'Quentin El Guay'):
 
 
 def train_simple_linear_regression(
-    df: pd.DataFrame, variable_descriptions: Dict[str, list[str]], random_state:int=42
+    df: pd.DataFrame,
+    variable_descriptions: Dict[str, list[str]],
+    random_state: int = 42,
 ) -> Pipeline:
     """Train a simple linear regression model on the given data.
 
@@ -119,8 +121,8 @@ def train_simple_linear_regression(
 def train_elastic_net_regression(
     df: pd.DataFrame,
     variable_descriptions: Dict[str, list[str]],
-    random_state:int=42,
-    max_evals:int=100
+    random_state: int = 42,
+    max_evals: int = 100,
 ) -> Pipeline:
     """Train a regression model on the given data usin the ElatictNet algorithm.
 
@@ -129,7 +131,7 @@ def train_elastic_net_regression(
         variable_descriptions (Dict[str, list[str]]): The description of the variables.
             It should contain the following keys: 'categorical', 'numerical' and 'target'.
         random_state: random state to use for reproducibility (default to 42).
-        max_evals: maximum number of evaluations for the hyperparameter optimization 
+        max_evals: maximum number of evaluations for the hyperparameter optimization
             (default to 100).
 
     # Returns:
@@ -137,9 +139,9 @@ def train_elastic_net_regression(
     """
     from sklearn.linear_model import ElasticNet
 
-    def dataframe_to_dict(df:pd.DataFrame):
+    def dataframe_to_dict(df: pd.DataFrame):
         return df.to_dict('records')
-    
+
     categorical_features = variable_descriptions['categorical']
     numerical_features = variable_descriptions['numerical']
     target = variable_descriptions['target']
@@ -148,7 +150,7 @@ def train_elastic_net_regression(
     y = df[target]
 
     X_train, X_val, y_train, y_val = train_test_split(
-        X, y.values,test_size=0.2, random_state=random_state
+        X, y.values, test_size=0.2, random_state=random_state
     )
 
     def create_pipeline(params):
@@ -157,37 +159,42 @@ def train_elastic_net_regression(
                 (
                     'numerical',
                     Pipeline(steps=[('scaler', StandardScaler())]),
-                    numerical_features
+                    numerical_features,
                 ),
                 (
                     'categorical',
                     Pipeline(
                         steps=[
-                            ('to_dict', FunctionTransformer(dataframe_to_dict)),
+                            (
+                                'to_dict',
+                                FunctionTransformer(dataframe_to_dict),
+                            ),
                             ('vectorizer', DictVectorizer()),
                         ]
-                    ), categorical_features
-                )
+                    ),
+                    categorical_features,
+                ),
             ]
         )
 
         pipeline = make_pipeline(
             preprocessor,
             TransformedTargetRegressor(
-                regressor=ElasticNet(**params), func=np.log1p, inverse_func=np.expm1
+                regressor=ElasticNet(**params),
+                func=np.log1p,
+                inverse_func=np.expm1,
             ),
         )
 
         return pipeline
 
-
     def objective(params):
-        
+
         with mlflow.start_run(run_name='ElasticNet Optimization', nested=True):
             mlflow.log_params(params)
 
             pipeline = create_pipeline(params)
-            
+
             pipeline.fit(X_train, y_train)
             y_pred = pipeline.predict(X_val)
             rmse_optimized = root_mean_squared_error(y_val, y_pred)
@@ -200,7 +207,7 @@ def train_elastic_net_regression(
         'alpha': hp.uniform('alpha', 0.0001, 0.001),
         'l1_ratio': hp.uniform('l1_ratio', 0, 0.2),
         'max_iter': scope.int(hp.quniform('max_iter', 100, 1000, 1)),
-        'random_state': random_state
+        'random_state': random_state,
     }
 
     with mlflow.start_run(run_name='Elasticnet'):
@@ -210,21 +217,24 @@ def train_elastic_net_regression(
             algo=tpe.suggest,
             max_evals=max_evals,
             trials=Trials(),
-            rstate=np.random.default_rng(random_state)
+            rstate=np.random.default_rng(random_state),
         )
 
         # TODO: find if there is a better way to force a string value
         best_params['max_iter'] = int(best_params['max_iter'])
-        
+
         logger.info('Best parameters are : %s', best_params)
 
         pipeline = create_pipeline(best_params)
 
         mlflow.log_params(best_params)
-            
-        best_model = mlflow.sklearn.log_model(pipeline.fit(X_train, y_train), 'model')
+
+        best_model = mlflow.sklearn.log_model(
+            pipeline.fit(X_train, y_train), 'model'
+        )
 
         return best_model.run_id, best_params
+
 
 # def train_regularized_regression(X:DataFrame, y:DataFrame, num_trials:int=50) -> Pipeline:
 #     """Train the regularized regression models (Lasso and Ridge) on the given data.

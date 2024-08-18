@@ -169,3 +169,8 @@ cython_debug/
 
 # MlFlow
 mlrun/
+
+# Airflow
+logs/
+config/
+plugins/

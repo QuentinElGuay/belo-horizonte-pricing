@@ -1,8 +1,0 @@
-{
-    "dataset": {
-      "name": "belo_horizonte_price",
-      "date": "2021-06-01",
-      "path": "s3://data/data_kaggle_2021.csv"
-    },
-    "experience_name": "belo_horizonte_estate_pricing"
-  }

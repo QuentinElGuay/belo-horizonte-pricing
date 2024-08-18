@@ -2,6 +2,7 @@ import logging
 from math import ceil
 from typing import Any, Dict, Tuple
 
+import awswrangler as wr
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -19,12 +20,22 @@ def read_csv(file_path: str) -> pd.DataFrame:
     """
     logger.info('Reading file %s', file_path)
 
-    df = pd.read_csv(
-        file_path,
-        encoding='utf-8',
-        dtype={'rooms': str, 'square-foot': str, 'garage-places': str},
-        skipinitialspace=True,
-    )
+    if file_path.startswith('s3://'):
+        # Download from S3
+        df = wr.s3.read_csv(
+            file_path,
+            encoding='utf-8',
+            dtype={'rooms': str, 'square-foot': str, 'garage-places': str},
+            skipinitialspace=True,
+        )
+
+    else:
+        df = pd.read_csv(
+            file_path,
+            encoding='utf-8',
+            dtype={'rooms': str, 'square-foot': str, 'garage-places': str},
+            skipinitialspace=True,
+        )
 
     logger.info(f'The dataset %s contains %s rows.', file_path, len(df))
     return df
@@ -158,6 +169,22 @@ def clean_dataset(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def store_dataset(df: pd.DataFrame, path: str):
+    """Store the dataset as parquet
+
+    Args:
+        df (pd.DataFrame): Dataset to store.
+        path (str): Path to store the dataset.
+    """
+    # Upload to S3
+    wr.s3.to_parquet(
+        df=df,
+        path=path,
+    )
+
+    logger.info('Dataset stored in %s', path)
+
+
 def get_dataset(file_path: str) -> Tuple[pd.DataFrame, Dict[str, str]]:
     """Read and clean the dataset file for the training process.
 
@@ -194,13 +221,13 @@ def split_test_dataset(
     Returns:
         Tuple[pd.DataFrame]: The training and test datasets.
     """
-    logger.info('Splitting the dataset')
+    logger.info('Splitting the dataset.')
     df_train, df_test = train_test_split(
         df, test_size=test_size, random_state=random_state
     )
 
     logger.info(
-        '   Split the dataset into datasets of %s and %s rows.',
+        'Split the dataset into datasets of %s and %s rows.',
         len(df_train),
         len(df_test),
     )
