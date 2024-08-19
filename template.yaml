@@ -6,40 +6,45 @@ Globals:
     Timeout: 50
     MemorySize: 2048
 
-Resources:
+Parameters:
+  DatasetBucketName:
+    Description: The name of the S3 bucket containing the datasets.
+    Type: String
+    Default: bludata-datasets
+    AllowedPattern: '^[a-z0-9.-]*$'
   
-  MLOpsLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: mlops-layer
-      Description: Layer containing basic functions for MLOps
-      ContentUri: library/
-      CompatibleRuntimes:
-        - python3.12
-    Metadata:
-      BuildMethod: python3.12   # Required to have AWS SAM build this layer
+  DatasetRootFolder:
+    Description: Path of the root folder containing the datasets in the S3 bucket.
+    Type: String
+    Default: mlops
+    AllowedPattern: '^[a-zA-Z0-9-/]*$'
 
-  InferenceFunction:
+  TrackingServerUri:
+    Description: The URI of the tracking server.
+    Type: String
+    Default: http://mlflow_ui:5000
+
+Resources:
+
+  ServeModelFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: lambdas/serve-model/
-      Handler: src.lambda.lambda_handler
-      PackageType: Zip
-      Runtime: python3.12
+      PackageType: Image
       Architectures:
         - x86_64
-      Layers:
-        - !Ref MLOpsLayer
+      Environment:
+        Variables:
+          TRACKING_SERVER_URI: http://mlflow_ui:5000
       Events:
         Inference:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /price
             Method: post
-    # Metadata:
-    #   Dockerfile: Dockerfile
-    #   DockerContext: ./app
-    #   DockerTag: 2-v1
+    Metadata:
+      Dockerfile: lambda.Dockerfile
+      DockerContext: ./src
+      DockerTag: latest
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -48,9 +53,9 @@ Outputs:
   InferenceApi:
     Description: "API Gateway endpoint URL for Prod stage for Inference function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/belo_horizonte_estate_pricing/"
-  InferenceFunction:
+  ServeModelFunction:
     Description: "Inference Lambda Function ARN"
-    Value: !GetAtt InferenceFunction.Arn
-  InferenceFunctionIamRole:
+    Value: !GetAtt ServeModelFunction.Arn
+  ServeModelFunctionIamRole:
     Description: "Implicit IAM Role created for Inference function"
-    Value: !GetAtt InferenceFunctionRole.Arn
+    Value: !GetAtt ServeModelFunctionRole.Arn

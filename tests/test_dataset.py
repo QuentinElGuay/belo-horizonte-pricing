@@ -1,7 +1,7 @@
 import pytest
 from pandas.api.types import is_numeric_dtype
 
-from library import dataset
+from src.library import dataset
 
 
 @pytest.fixture

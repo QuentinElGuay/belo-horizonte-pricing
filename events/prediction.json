@@ -1,0 +1,87 @@
+{
+    "body":"{\n    \"adm-fees\": \"0\",\n    \"neighborhood\": \"Buritis\",\n    \"square-foot\": \"102.0\",\n    \"rooms\": \"3\",\n    \"garage-places\": \"2\"\n}\n",
+    "headers":{
+       "Accept":"*/*",
+       "Accept-Encoding":"gzip, deflate, br",
+       "Cache-Control":"no-cache",
+       "Connection":"keep-alive",
+       "Content-Length":"127",
+       "Content-Type":"application/json",
+       "Host":"127.0.0.1:3000",
+       "Postman-Token":"bd71bb7c-9c49-4672-830e-7c6a5708c63c",
+       "User-Agent":"PostmanRuntime/7.28.4",
+       "X-Forwarded-Port":"3000",
+       "X-Forwarded-Proto":"http"
+    },
+    "httpMethod":"POST",
+    "isBase64Encoded":false,
+    "multiValueHeaders":{
+       "Accept":[
+          "*/*"
+       ],
+       "Accept-Encoding":[
+          "gzip, deflate, br"
+       ],
+       "Cache-Control":[
+          "no-cache"
+       ],
+       "Connection":[
+          "keep-alive"
+       ],
+       "Content-Length":[
+          "127"
+       ],
+       "Content-Type":[
+          "application/json"
+       ],
+       "Host":[
+          "127.0.0.1:3000"
+       ],
+       "Postman-Token":[
+          "bd71bb7c-9c49-4672-830e-7c6a5708c63c"
+       ],
+       "User-Agent":[
+          "PostmanRuntime/7.28.4"
+       ],
+       "X-Forwarded-Port":[
+          "3000"
+       ],
+       "X-Forwarded-Proto":[
+          "http"
+       ]
+    },
+    "multiValueQueryStringParameters":"None",
+    "path":"/price",
+    "pathParameters":"None",
+    "queryStringParameters":"None",
+    "requestContext":{
+       "accountId":"123456789012",
+       "apiId":"1234567890",
+       "domainName":"127.0.0.1:3000",
+       "extendedRequestId":"None",
+       "httpMethod":"POST",
+       "identity":{
+          "accountId":"None",
+          "apiKey":"None",
+          "caller":"None",
+          "cognitoAuthenticationProvider":"None",
+          "cognitoAuthenticationType":"None",
+          "cognitoIdentityPoolId":"None",
+          "sourceIp":"127.0.0.1",
+          "user":"None",
+          "userAgent":"Custom User Agent String",
+          "userArn":"None"
+       },
+       "path":"/price",
+       "protocol":"HTTP/1.1",
+       "requestId":"5b19ca7e-4644-4514-bc4d-567318e32276",
+       "requestTime":"19/Aug/2024:19:35:08 +0000",
+       "requestTimeEpoch":1724096108,
+       "resourceId":"123456",
+       "resourcePath":"/price",
+       "stage":"Prod"
+    },
+    "resource":"/price",
+    "stageVariables":"None"
+ }
+ 

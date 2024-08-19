@@ -1,10 +1,10 @@
 import json
 import logging
-from os import getenv
-
-from mlflow import set_tracking_uri
+import os
 
 from library.serve import predict
+
+import mlflow
 
 
 def lambda_handler(event, context):
@@ -12,22 +12,16 @@ def lambda_handler(event, context):
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    TRACKING_SERVER_URI = getenv(
+    TRACKING_SERVER_URI = os.getenv(
         'TRACKING_SERVER_URI', 'http://mlflow_ui:5000'
     )
-    set_tracking_uri(TRACKING_SERVER_URI)
+    mlflow.set_tracking_uri(TRACKING_SERVER_URI)
 
     # TODO: those should be deduced from the event dictionnary
-    model_name = 'belo_horizonte_estate_pricing'
-    inputs = {
-        'adm_fees': '',
-        'neighborhood': 'Miramar',
-        'square_foot': '79',
-        'rooms': '2',
-        'garage_places': '--',
-    }
+    MODEL_NAME = os.getenv('MODEL_NAME', 'belo-horizonte-estate-pricing')
 
-    prediction = predict(model_name, inputs)
+    inputs = json.loads(event['body'])
+    prediction = predict(MODEL_NAME, inputs)
     price = prediction[0]
 
     response = {

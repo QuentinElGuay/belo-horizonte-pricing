@@ -4,7 +4,11 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "belo_horizonte_estate_pricing"
+stack_name = "belo-horizonte-estate-pricing"
+# s3_prefix = "belo-horizonte-estate-pricing"
+region = "sa-east-1"
+profile = "ds-dev"
+image_repositories = []
 
 [default.build.parameters]
 cached = true
