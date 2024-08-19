@@ -117,7 +117,8 @@ I did my best to explain clearly how to play with my project and I used `poetry`
     - Execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
     - Execute `poetry run isort .` to use the `isort`.
     - Execute `poetry run pylint /src` to use the linter (my code has been rated at 7.50/10, there is still work to do).
-- [ ] There's a Makefile (1 point)
+- [X] There's a Makefile (1 point)
+    - Quite simple but I use it to initialize Airflow.
 - [X] There are pre-commit hooks (1 point):
     - Run `poetry run pre-commit install` to initialize the pre-commit hook after installing the project.
 - [ ] There's a CI/CD pipeline (2 points)
