@@ -1,16 +1,21 @@
 # Tutorial
 ## 0. Initialize the project
-1. First, let's build our docker image for further use:
+1. 1. First, let's build our airflow environment for further use:
+```
+make init_airflow
+```
+This is the equivalent to building our local image then running a script to initialize Airflow:
 ```
 docker build -t mlops/mlops:0.1.0 src/
-```
-2. Start the service (mlflow, airflow, min.io and postgres) by running docker compose. For the first execution, I recommand running the initialization of airflow first:
-```
 docker compose up airflow-init
 ```
-You can then run the classic:
+You can then run the classic to start the required required services:
 ```
 docker compose up
+```
+If you ever wanted to run only `MLFlow` and `Min.io`, for example to run the notebooks, you can run:
+```
+docker compose up mlflow s3
 ```
  The first time, the services need to be initialized and it might take some time. You'll know that everything is ready when you'll see that the `airflow-webserver-1` workers are ready:
 ```
@@ -93,7 +98,7 @@ Click on the name of the DAG to enter the execution details. On the left of the 
 3. If you click on the `Graph` tab, you can visualize the DAG as a Graph. As you can see, I added a new ElasticNet model to the experiment. The idea is to run multiple models in parralel to check which algorithm is better. However, due to the limitations of running on a local machine and to respect your time, I decided to keep it simple.
 ![DAG Graph](docs/pictures/airflow_graph.png "DAG Graph")
 
-3. Once all the tasks of the DAG have ran (all checkboxes turned to dark green), you can check the [MLFlow Models page](http://localhost:5000/#/models) to see that the process elected a new challenger for our model. The champion, however stayed the same. You can easily change by adding the flag `--auto-promote` to the command of the `t4` task of the [DAG description](dags/auto_training.py) (l. 102). I would, however, recommend a very mature quality process to automate the model selection in production. 
+3. Once all the tasks of the DAG have ran (all checkboxes turned to dark green), you can check the [MLFlow Models page](http://localhost:5000/#/models) to see that the process elected a new challenger for our model. The champion, however stayed the same. You can easily change by adding the flag `--auto-promote` to the command of the `t4` task of the [DAG description](dags/auto_training.py) (l. 102). I would, however, recommend a very mature quality process to automate the model selection in production.
 ![MLFlow Model Registry: new challenger](docs/pictures/mlflow_registry_2.png "MLFlow Model Registry: new challenger")
 
 4. If you are interested, you can simulate the need for a new experiment by clicking on the **Trigger DAG** on the top right corner of the screen. This should open a page asking you for the `experience_name` and the `dataset_uri`. Change the dataset URI to *s3://mlops-datasets/data_synthetic.csv*. This dataset simulate an inflation of the prices of the properties of ~10%, which would require retraining the model. Click on **Trigger** to start the process.
