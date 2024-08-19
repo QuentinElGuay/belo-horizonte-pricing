@@ -116,6 +116,7 @@ I did my best to explain clearly how to play with my project and I used `poetry`
 - [x] Linter and/or code formatter are used (1 point)
     - Execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
     - Execute `poetry run isort .` to use the `isort`.
+    - Execute `poetry run pylint /src` to use the linter (my code has been rated at 7.50/10, there is still work to do).
 - [ ] There's a Makefile (1 point)
 - [ ] There are pre-commit hooks (1 point)
 - [ ] There's a CI/CD pipeline (2 points)
