@@ -1,0 +1,16 @@
+address,adm-fees,garage-places,price,rooms,square-foot,neighborhood,city,latitude,longitude
+Without admin-fee - OK, ,3,3400000,5,412,Cidade Jardim,Belo Horizonte,-19.56148,-43.56539
+With admin-fee - OK,500,3,3400000,5,412,Cidade Jardim,Belo Horizonte,-19.56148,-43.56539
+Without price - KO,,4,,3,360,Copacabana,Belo Horizonte,-19.50096,-43.59060
+Over maximum price - KO,,3,5000000,2,200,Maria Goretti,Belo Horizonte,-19.51360,-43.54432
+Under minimum price - KO,,2,5000,1,200,Maria Goretti,Belo Horizonte,-19.51360,-43.54432
+Without rooms - KO,,2,499000,--,125,Vila Clóris,Belo Horizonte,-19.49373,-43.56493
+Over maximum rooms - KO,,2,499000,10,125,Vila Clóris,Belo Horizonte,-19.49373,-43.56493
+Range rooms - OK,,2,499000,2-3,125,Vila Clóris,Belo Horizonte,-19.49373,-43.56493
+Without garages-place - OK,,--,1350000,4,400,Grajaú,Belo Horizonte,-19.56204,-43.57504
+Over maximum garage-places - KO,,10,1350000,4,400,Grajaú,Belo Horizonte,-19.56204,-43.57504
+Range garage-places - OK,,2-3,1000000,3,116,Funcionários,Belo Horizonte,-19.55427,-43.56026
+Without square-foot - KO,30,1,245000,2,--,Miramar,Belo Horizonte,-19.59437,-44.00490
+Under minimum square-foot - KO,30,1,24500,2,5,Miramar,Belo Horizonte,-19.59437,-44.00490
+Over maximum square-foot - KO,30,1,245000,2,5000,Miramar,Belo Horizonte,-19.59437,-44.00490
+Range square-foot - OK,30,1,245000,2,100-120,Miramar,Belo Horizonte,-19.59437,-44.00490

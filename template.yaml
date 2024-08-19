@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 50
+    MemorySize: 2048
+
+Parameters:
+  DatasetBucketName:
+    Description: The name of the S3 bucket containing the datasets.
+    Type: String
+    Default: bludata-datasets
+    AllowedPattern: '^[a-z0-9.-]*$'
+  
+  DatasetRootFolder:
+    Description: Path of the root folder containing the datasets in the S3 bucket.
+    Type: String
+    Default: mlops
+    AllowedPattern: '^[a-zA-Z0-9-/]*$'
+
+  TrackingServerUri:
+    Description: The URI of the tracking server.
+    Type: String
+    Default: http://mlflow_ui:5000
+
+Resources:
+
+  ServeModelFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          TRACKING_SERVER_URI: http://mlflow_ui:5000
+      Events:
+        Inference:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /price
+            Method: post
+    Metadata:
+      Dockerfile: lambda.Dockerfile
+      DockerContext: ./src
+      DockerTag: latest
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  InferenceApi:
+    Description: "API Gateway endpoint URL for Prod stage for Inference function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/belo_horizonte_estate_pricing/"
+  ServeModelFunction:
+    Description: "Inference Lambda Function ARN"
+    Value: !GetAtt ServeModelFunction.Arn
+  ServeModelFunctionIamRole:
+    Description: "Implicit IAM Role created for Inference function"
+    Value: !GetAtt ServeModelFunctionRole.Arn
