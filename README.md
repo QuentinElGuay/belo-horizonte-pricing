@@ -40,7 +40,7 @@ Applying the previously described process, our project is to do the following:
 3. **Feedback loop:**
     1. Since we don't have real API calls and I didn't have time to scrap a real dataset, I decided to create synthetic data, applying a random increase in price between 10 and 20% to the original dataset to simulate the data shift due to the estate inflation since 2021.
     2. We then train than the same models than in the second notebook, this time in Airflow to automate the process. I decided to use Airflow instead of Mage because I didn't really like this platform and wanted to experiment with Airflow.
-    3. For this experiment, I decided to promote the new best model manually in the MLFlow Model Registry. However, you can easily change by adding the flag `--auto-promote` to the command of the `t4` task of the [DAG description](dags/auto_training.py) (l. 102).  
+    3. For this experiment, I decided to promote the new best model manually in the MLFlow Model Registry.
 
 ## Install the project
 The following tools are used to run the project locally, please follow the links for installation instructions:
@@ -54,25 +54,8 @@ docker compose up
 ```
 3. Finally, we use [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) to simulate the AWS services locally (AWS Lambda, API Gateway).
 
-## Run the project locally
-1. First, let's build our docker image:
-```
-docker build -t mlops/mlops:0.1.0 src/
-```
-2. Start our docker compose services. The first time, the services need to be initialized and it might take some time. You'll know that everything is ready when you'll see that the `airflow-webserver-1` workers are ready:
-```
-docker compose up
-...
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [42] [INFO] Listening at: http://0.0.0.0:8080 (42)
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [42] [INFO] Using worker: sync
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [75] [INFO] Booting worker with pid: 75
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [76] [INFO] Booting worker with pid: 76
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [77] [INFO] Booting worker with pid: 77
-airflow-webserver-1    | [2024-08-19 00:59:36 +0000] [78] [INFO] Booting worker with pid: 78
-```
-3. Access the airflow webserver at `http://0.0.0.0:8080` and connect with login `airflow` and password `airflow`.
-4. There should be only one DAG (automated process) called `auto_training_regression`. Start it, by clicking on the **Trigger DAG** (:arrow_forward:) in the `Actions` column. This should open a page asking you for the `experience_name` and the `dataset_uri`. You can leave the default values. (_belo-horizonte-estate-pricing_ and _s3://mlops-datasets/data_synthetic.csv_). Click on **Trigger** to start the process.
-5. Once all the tasks of the DAG have ran (all checkboxes turned to dark green), you can check the MLFlow models page to see that the process elected a new challenger for our model.
+## Tutorial
+If you want to have a quick look at the project or even run it on your machine, you can follow this [tutorial](/tutorial.md).
 
 ## MLOps Zoomcamp Project
 This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https://github.com/DataTalksClub/mlops-zoomcamp).

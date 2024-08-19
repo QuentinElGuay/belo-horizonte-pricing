@@ -24,7 +24,7 @@ with DAG(
         'experience_name': Param(
             'belo-horizonte-estate-pricing', type='string', description='The name of the experience to run.'),
         'dataset_uri': Param(
-            's3://mlops-datasets/data_synthetic.csv',
+            's3://mlops-datasets/data_kaggle_2021.csv',
             type='string',
             description='The path to the dataset to use.',
             format='uri-template'

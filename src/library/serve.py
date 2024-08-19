@@ -6,7 +6,7 @@ from numpy import ndarray
 from pandas import DataFrame
 
 import mlflow
-from library.dataset import convert_numeric_columns, prepare_features
+from library.dataset import prepare_features
 
 logger = logging.getLogger(__name__)
 
