@@ -2,9 +2,8 @@ import json
 import logging
 import os
 
-from library.serve import predict
-
 import mlflow
+from library.serve import predict
 
 
 def lambda_handler(event, context):
