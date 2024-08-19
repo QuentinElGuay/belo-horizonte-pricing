@@ -67,13 +67,15 @@ This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https
 - [ ] 0 points: The problem is not described
 - [ ] 1 point: The problem is described but shortly or not clearly
 - [x] 2 points: The problem is well described and it's clear what the problem the project solves
+
 Hopefully, the README will be clear enough.
 
 **Cloud:**
 - [ ] 0 points: Cloud is not used, things run only locally
 - [X] 2 points: The project is developed on the cloud OR uses localstack (or similar tool) OR the project is deployed to Kubernetes or similar container management platforms
-- [ ] 4 points: The project is developed on the cloud and IaC tools are used for provisioning the infrastructure:
-I used `docker compose` to run the project locally since I didn't want to pay for servers and databases. However, I did use `AWS SAM framework` to create an [IaC template](template.yaml) and manage an `AWS CloudFormation stack`. Unfortunately, I hit a problem due to the fact that the MLFlow lib is too big for a classic `zipped` lambda and I didn't get the time to complety understand how to depluy the `image` version of the service.
+- [ ] 4 points: The project is developed on the cloud and IaC tools are used for provisioning the infrastructure
+
+I used `docker compose` to run the project locally since I didn't want to pay for servers and databases. However, I did use `AWS SAM framework` to create an [IaC template](template.yaml) and manage an `AWS CloudFormation stack`. Unfortunately, I hit a problem due to the fact that the MLFlow lib is too big for a classic `zipped` lambda and I didn't get the time to complety understand how to deploy the `image` version of the service.
 
 **Experiment tracking and model registry:**
 - [ ] 0 points: No experiment tracking or model registry
@@ -81,7 +83,7 @@ I used `docker compose` to run the project locally since I didn't want to pay fo
 - [x] 4 points: Both experiment tracking and model registry are used
 
 **Workflow orchestration:**
-- [] 0 points: No workflow orchestration
+- [ ] 0 points: No workflow orchestration
 - [x] 2 points: Basic workflow orchestration
 - [ ] 4 points: Fully deployed workflow
 Not sure what is a *fully deployed workflow* means but I guess I at leasst qualify for the basic workflow.
@@ -90,23 +92,26 @@ Not sure what is a *fully deployed workflow* means but I guess I at leasst quali
 - [ ] 0 points: Model is not deployed
 - [ ] 2 points: Model is deployed but only locally
 - [x] 4 points: The model deployment code is containerized and could be deployed to cloud or special tools for model deployment are used
-Everything runs in docker :)
+
+Everything runs in docker except for the notebooks since they are supposed to run locally :)
 
 **Model monitoring:**
 - [x] 0 points: No model monitoring
 - [ ] 2 points: Basic model monitoring that calculates and reports metrics
 - [ ] 4 points: Comprehensive model monitoring that sends alerts or runs a conditional workflow (e.g. retraining, generating debugging dashboard, switching to a different model) if the defined metrics threshold is violated
+
 I didn't have time to play with monitoring but I do hope to implement this feature in the future.
 
 **Reproducibility:**
 - [ ] 0 points: No instructions on how to run the code at all, the data is missing
 - [ ] 2 points: Some instructions are there, but they are not complete OR instructions are clear and complete, the code works, but the data is missing
 - [x] 4 points: Instructions are clear, it's easy to run the code, and it works. The versions for all the dependencies are specified.
+
 I did my best to explain clearly how to play with my project and I used `poetry` (similar to `pipenv`) to manage my dependencies.
 
 **Best practices:**
 - [x] There are unit tests (1 point):
-    - The coverage isn't yet complete but you can run `pytest` to execute some unit tests.
+    - The coverage is far from complete but you can run `poetry run pytest` to execute some unit tests.
 - [ ] There is an integration test (1 point)
 - [x] Linter and/or code formatter are used (1 point)
     - Execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
