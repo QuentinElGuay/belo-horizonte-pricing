@@ -138,12 +138,14 @@ def evaluate_experience(
     auto_promote: bool,
     dataset_uri=None,
 ):
-    """Evaluate the runs of an experiment to select new challenger models and, optionnaly, promote a new champion.
+    """Evaluate the runs of an experiment to select new challenger models and,
+    optionnaly, promote a new champion.
 
     Args:
         experience_name (str): The name of the experiment to analyze.
         number_challengers (int): Quantity of challengers to select.
-        auto_promote (bool): Whether to automatically promote the best model. Defaults to False.
+        auto_promote (bool): Whether to automatically promote the best model. Defaults
+        to False.
         dataset_uri (str): The dataset to test the model with.
     """
     S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')

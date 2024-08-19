@@ -7,9 +7,21 @@ from library.serve import predict
 
 
 def lambda_handler(event, context):
+    """Handler to be called by a lambda function
+
+    Args:
+        event (dict): A dictionnary containing the request parameters.
+        context (dict): A dicitonnary containing the execution context.
+
+    Returns:
+        dict: A dictionnary containing the response to the request.
+    """
 
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
+
+    logger.info('Starting prediction')
+    logger.debug('Event: %s', event)
 
     TRACKING_SERVER_URI = os.getenv(
         'TRACKING_SERVER_URI', 'http://mlflow_ui:5000'
@@ -22,6 +34,8 @@ def lambda_handler(event, context):
     inputs = json.loads(event['body'])
     prediction = predict(MODEL_NAME, inputs)
     price = prediction[0]
+
+    logger.info('Prediction: %s',  price)
 
     response = {
         'statusCode': 200,
