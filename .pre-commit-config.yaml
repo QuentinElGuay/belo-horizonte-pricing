@@ -12,3 +12,18 @@ repos:
   hooks:
     - id: isort
       name: isort (python)
+- repo: https://github.com/grantjenks/blue
+  rev: v0.9.1
+  hooks:
+    - id: blue
+      name: blue (python)
+- repo: local
+  hooks:
+  - id: pytest-check
+    name: pytest-check
+    entry:  pytest
+    language: system
+    pass_filenames: false
+    always_run: true
+    args:
+      - 'tests/'
