@@ -11,23 +11,24 @@ The process we want to implement in this project is the following:
 
 1. **Experimentation phase:**
     1. Comes a first dataset, analyzed and cleand by a data scientist.
-    2. The data scientist runs multiples experiments to find the best possible model:
+    2. The data scientist runs multiple experiments to find the best possible model, tracking them with MLFlow to be able to reproduce the best ones at anytime using the saved parameters. Each experiment is composed of 4 steps:
         1. Split the dataset in two to keep a test dataset used to decide between the challengers.
-        2. Run experiments on the training set (algorithm and optimization) using the `MLFlow Tracking Server` to store the results.
-        3. Select the best candidates and apply them to the test dataset.
+        2. Train models on the training set, using the `MLFlow Tracking Server` to store the algorithms,  parameters and results.
+        3. Select the best candidates and decide the winner by applying them to the test dataset.
         4. Register the best candidate in the `MLFlow Model Registery` as current champion (model tu use in production).
 2. **Deployment in production:**
-    1. New values are sent for prediction, either via API or a Batch process.
+    1. The model is deployed in production, either via `API` or a `batch process`.
+    2. New values are sent for prediction.
     2. The code calls the model register to load the current production model.
     3. Results are returned to the user and stored for monitoring.
 3. **Feedback loop:**
-    1. On scheduled dates or when a datashift is detected, create a new dataset using recente predictions and actual values.
+    1. On scheduled dates or when a data shift is detected, create a new dataset using recente predictions and actual values.
     2. Execute the model training process automatically using the new dataset (see 1.).
     3. Compare the result of the current model in production with the new champion.
     4. Promote (automatically or not) the new champion if required.
 
 ### About this particular project
-I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. This dataset is _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is however not really a problem since the main goal of this project is to demonstrate the MLOps methodologies rather than pure Machine Learning technics.
+I decided to use the [**house-pricing-in-belo-horizonte** dataset](https://www.kaggle.com/datasets/guilherme26/house-pricing-in-belo-horizonte) available on Kaggle to try to solve the classic `house pricing prediction` problem. I chose this dataset because I'm a frenchie living in Brasil and thought it was fun. The dataset is, howver, _rather small_ and somewhat _limitated in the quantity of features_ as demonstrated by the [Explory Data Analysis](EDA.ipynb). This implies that our capacity to predict precisely the prices will be limited. It is nevertheless not really a problem since the main focus of this project is on the MLOps methodologies and not on pure Machine Learning technics.
 
 Applying the previously described process, our project is to do the following:
 1. **Experimentation phase:**
@@ -38,8 +39,9 @@ Applying the previously described process, our project is to do the following:
     1. Deploy the model in AWS Lambda.
     2. Create a REST API (AWS API Gateway) to call the model and predict the estate value.
 3. **Feedback loop:**
-    1. Since we don't have real API calls and I didn't have time to scrap a real dataset, I decided to create synthetic data, applying a random increase in price between 10 and 20% to the original dataset to simulate the data shift due to the estate inflation since 2021.
-    2. We then train than the same models than in the second notebook, this time in Airflow to automate the process. I decided to use Airflow instead of Mage because I didn't really like this platform and wanted to experiment with Airflow.
+    1. Since we don't have real API calls and since I didn't have time to scrap a real dataset, I decided to create synthetic data, applying a random increase in price between 10 and 20% to the original dataset to simulate the data shift due to the estate inflation since 2021.
+    2. [I didn't have time for this yet] The data shift is detecting automatically though the monitoring.
+    3. We train the same models than in the notebook, this time in Airflow to automate the process. I decided to use Airflow instead of Mage because I didn't really like this platform and wanted to experiment with Airflow.
     3. For this experiment, I decided to promote the new best model manually in the MLFlow Model Registry.
 
 ## Install the project
@@ -82,7 +84,7 @@ I used `docker compose` to run the project locally since I didn't want to pay fo
 - [] 0 points: No workflow orchestration
 - [x] 2 points: Basic workflow orchestration
 - [ ] 4 points: Fully deployed workflow
-Not sure what is a fully deployed workflow is but I guess I at leasst qualify for the basic workflow.
+Not sure what is a *fully deployed workflow* means but I guess I at leasst qualify for the basic workflow.
 
 **Model deployment:**
 - [ ] 0 points: Model is not deployed
@@ -94,7 +96,7 @@ Everything runs in docker :)
 - [x] 0 points: No model monitoring
 - [ ] 2 points: Basic model monitoring that calculates and reports metrics
 - [ ] 4 points: Comprehensive model monitoring that sends alerts or runs a conditional workflow (e.g. retraining, generating debugging dashboard, switching to a different model) if the defined metrics threshold is violated
-I didn't get the time to play with monitoring but I do hope to implement this feature in the future.
+I didn't have time to play with monitoring but I do hope to implement this feature in the future.
 
 **Reproducibility:**
 - [ ] 0 points: No instructions on how to run the code at all, the data is missing

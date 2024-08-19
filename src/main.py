@@ -4,17 +4,13 @@ import os
 
 import awswrangler as wr
 import click
-from library.serve import predict
 import pandas as pd
 from sklearn.metrics import root_mean_squared_error
 
 import mlflow
-from library.dataset import (
-    clean_dataset,
-    read_csv,
-    split_test_dataset,
-    store_dataset,
-)
+from library.dataset import (clean_dataset, read_csv, split_test_dataset,
+                             store_dataset)
+from library.serve import predict
 
 
 @click.group()
@@ -91,13 +87,11 @@ def train_model(
 
     match model_name:
         case 'simple_linear_regression':
-            from library.train import (
-                train_simple_linear_regression as train_model,
-            )
+            from library.train import \
+                train_simple_linear_regression as train_model
         case 'elastic_net_regression':
-            from library.train import (
-                train_elastic_net_regression as train_model,
-            )
+            from library.train import \
+                train_elastic_net_regression as train_model
         case _:
             raise ValueError(f'Invalid model type: {model_name}')
 
@@ -142,7 +136,7 @@ def evaluate_experience(
     experience_name: str,
     challengers: int,
     auto_promote: bool,
-    dataset_uri=None
+    dataset_uri=None,
 ):
     """Evaluate the runs of an experiment to select new challenger models and, optionnaly, promote a new champion.
 
@@ -173,7 +167,7 @@ def evaluate_experience(
     logger.info('Loading test dataset from %s', path)
     test_df = wr.s3.read_parquet(path)
     test_df = clean_dataset(test_df)
-    
+
     # Create MLFlow Client
     client = mlflow.MlflowClient()
 
@@ -208,8 +202,11 @@ def evaluate_experience(
         challenger_rmse = root_mean_squared_error(test_df['price'], pred)
         logger.info('Challenger %s RMSE: %s', run_id, challenger_rmse)
 
-        logger.info('Promoting challenger: %s', f'runs:/{challenger.metadata.run_id}/model')
-        
+        logger.info(
+            'Promoting challenger: %s',
+            f'runs:/{challenger.metadata.run_id}/model',
+        )
+
         if challenger_rmse < best_challenger_rmse:
             best_challenger_rmse = challenger_rmse
             best_challenger = challenger
@@ -244,7 +241,6 @@ def evaluate_experience(
     }
 
     return response
-
 
 
 def lambda_handler(event, context):
