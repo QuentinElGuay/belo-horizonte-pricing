@@ -35,7 +35,7 @@ def lambda_handler(event, context):
     prediction = predict(MODEL_NAME, inputs)
     price = prediction[0]
 
-    logger.info('Prediction: %s',  price)
+    logger.info('Prediction: %s', price)
 
     response = {
         'statusCode': 200,
