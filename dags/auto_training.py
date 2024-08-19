@@ -16,15 +16,15 @@ default_args = {
 }
 
 with DAG(
-    'docker_operator_dag',
+    'auto_training_regression',
     default_args=default_args,
     schedule_interval='* * 1 * *',
     catchup=False,
     params={
         'experience_name': Param(
-            '', type='string', description='The name of the experience to run.'),
+            'belo-horizonte-estate-pricing', type='string', description='The name of the experience to run.'),
         'dataset_uri': Param(
-            '',
+            's3://mlops-datasets/data_synthetic.csv',
             type='string',
             description='The path to the dataset to use.',
             format='uri-template'

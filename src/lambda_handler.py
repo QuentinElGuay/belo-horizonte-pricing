@@ -1,9 +1,10 @@
 import json
 import logging
-from os import getenv
+import os
 
 from library.serve import predict
-from mlflow import set_tracking_uri
+
+import mlflow
 
 
 def lambda_handler(event, context):
@@ -11,13 +12,13 @@ def lambda_handler(event, context):
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    TRACKING_SERVER_URI = getenv(
+    TRACKING_SERVER_URI = os.getenv(
         'TRACKING_SERVER_URI', 'http://mlflow_ui:5000'
     )
-    set_tracking_uri(TRACKING_SERVER_URI)
+    mlflow.set_tracking_uri(TRACKING_SERVER_URI)
 
     # TODO: those should be deduced from the event dictionnary
-    MODEL_NAME = getenv('MODEL_NAME', 'belo_horizonte_price_regression')
+    MODEL_NAME = os.getenv('MODEL_NAME', 'belo-horizonte-estate-pricing')
 
     inputs = json.loads(event['body'])
     prediction = predict(MODEL_NAME, inputs)

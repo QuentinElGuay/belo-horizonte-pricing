@@ -97,13 +97,13 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      - POSTGRES_USER=${AIRFLOW_PG_USER}
+      - POSTGRES_PASSWORD=${AIRFLOW_PG_PASSWORD}
+      - POSTGRES_DB=${AIRFLOW_PG_DATABASE}
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ["CMD", "pg_isready", "-U", "${AIRFLOW_PG_DATABASE}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -114,13 +114,13 @@ services:
   postgres_mlflow:
     image: postgres:13
     environment:
-      POSTGRES_USER: mlflow
-      POSTGRES_PASSWORD: mlflow
-      POSTGRES_DB: mlflow
+      - POSTGRES_USER=${MLFLOW_PG_USER}
+      - POSTGRES_PASSWORD=${MLFLOW_PG_PASSWORD}
+      - POSTGRES_DB=${MLFLOW_PG_DATABASE}
     volumes:
       - postgres-mlflow-db-volume:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "mlflow"]
+      test: ["CMD", "pg_isready", "-U", "${MLFLOW_PG_DATABASE}"]
       interval: 10s
       retries: 5
       start_period: 5s
@@ -135,21 +135,21 @@ services:
     volumes:
       - minio_data:/data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
     networks:
       - frontend
       - backend
     environment:
-      - MINIO_ROOT_USER=XeAMQQjZY2pTcXWfxh4H
-      - MINIO_ROOT_PASSWORD=wyJ30G38aC2UcyaFjVj2dmXs1bITYkJBcx0FtljZ
-      - MINIO_ADDRESS=:9000
-      - MINIO_PORT=9000
-      - MINIO_STORAGE_USE_HTTPS=False
-      - MINIO_CONSOLE_ADDRESS=:9001
-    command: server /data --console-address :9001
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_ADDRESS=${MINIO_ADDRESS}
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_STORAGE_USE_HTTPS=${MINIO_STORAGE_USE_HTTPS}
+      - MINIO_CONSOLE_ADDRESS=${MINIO_CONSOLE_ADDRESS}
+    command: server /data --console-address ${MINIO_CONSOLE_ADDRESS}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD", "curl", "-f", "http://localhost:${MINIO_PORT}/minio/health/live"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -163,7 +163,7 @@ services:
       - backend
     entrypoint: >
       /bin/sh -c "
-      until (/usr/bin/mc config host add local http://s3:9000 XeAMQQjZY2pTcXWfxh4H wyJ30G38aC2UcyaFjVj2dmXs1bITYkJBcx0FtljZ) do echo '...waiting...' && sleep 1; done;
+      until (/usr/bin/mc config host add local http://s3:${MINIO_PORT} ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY}) do echo '...waiting...' && sleep 1; done;
       /usr/bin/mc mb -p local/mlops-datasets;
       /usr/bin/mc policy set download local/mlops-datasets;
       /usr/bin/mc policy set public local/mlops-datasets;
@@ -184,28 +184,28 @@ services:
     container_name: mlflow_ui
     restart: always
     ports:
-      - 5000:5000
+      - ${MLFLOW_PORT}:5000
     depends_on:
       postgres_mlflow:
         condition: service_healthy
       s3:
         condition: service_healthy
     environment:
-      - AWS_ACCESS_KEY_ID=XeAMQQjZY2pTcXWfxh4H
-      - AWS_SECRET_ACCESS_KEY=wyJ30G38aC2UcyaFjVj2dmXs1bITYkJBcx0FtljZ
-      - MLFLOW_S3_ENDPOINT_URL=http://s3:9000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - MLFLOW_S3_ENDPOINT_URL=http://s3:${MINIO_PORT}
     #  - MLFLOW_S3_IGNORE_TLS=true
     entrypoint: >
       mlflow server
       --host 0.0.0.0
-      --backend-store-uri postgresql+psycopg2://mlflow:mlflow@postgres_mlflow:5432/mlflow
+      --backend-store-uri postgresql+psycopg2://${MLFLOW_PG_DATABASE}:${MLFLOW_PG_DATABASE}@postgres_mlflow:${MLFLOW_PG_PORT}/${MLFLOW_PG_DATABASE}
       --serve-artifacts
       --artifacts-destination s3://mlops-models/
     networks:
       - frontend
       - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:${MLFLOW_PORT}/health/"]
       interval: 30s
       timeout: 10s
       retries: 3

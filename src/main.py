@@ -4,6 +4,7 @@ import os
 
 import awswrangler as wr
 import click
+from library.serve import predict
 import pandas as pd
 from sklearn.metrics import root_mean_squared_error
 
@@ -172,6 +173,9 @@ def evaluate_experience(
     logger.info('Loading test dataset from %s', path)
     test_df = wr.s3.read_parquet(path)
     test_df = clean_dataset(test_df)
+    
+    # Create MLFlow Client
+    client = mlflow.MlflowClient()
 
     # Get current champion if exists
     champion_rmse = float('inf')
@@ -185,6 +189,8 @@ def evaluate_experience(
     except mlflow.exceptions.MlflowException as e:
         logger.info('No champion found: %s', e.message)
 
+    logger.info('Champion RMSE: %s', champion_rmse)
+
     # Get N best challengers
     best_rmse_runs = mlflow.search_runs(
         experiment_names=[experience_name],
@@ -195,22 +201,39 @@ def evaluate_experience(
     best_challenger = None
     best_challenger_rmse = float('inf')
     best_run_ids = best_rmse_runs['run_id']
+
     for run_id in best_run_ids:
         challenger = mlflow.pyfunc.load_model(f'runs:/{run_id}/model')
         pred = challenger.predict(test_df)
         challenger_rmse = root_mean_squared_error(test_df['price'], pred)
+        logger.info('Challenger %s RMSE: %s', run_id, challenger_rmse)
+
+        logger.info('Promoting challenger: %s', f'runs:/{challenger.metadata.run_id}/model')
+        
         if challenger_rmse < best_challenger_rmse:
             best_challenger_rmse = challenger_rmse
             best_challenger = challenger
+            logger.info('New best challenger: %s', run_id)
+
+    new_challenger = mlflow.register_model(
+        f'runs:/{best_challenger.metadata.run_id}/model',
+        experience_name,
+    )
+
+    client.set_registered_model_alias(
+        new_challenger.name, 'challenger', new_challenger.version
+    )
+
+    client.set_registered_model_tag(new_challenger.name, 'auto', 'true')
 
     # Promote best model
     if auto_promote and best_challenger_rmse < champion_rmse:
+
         new_champion = mlflow.register_model(
             f'runs:/{best_challenger.metadata.run_id}/model',
             experience_name,
         )
 
-        client = mlflow.MlflowClient()
         client.set_registered_model_alias(
             new_champion.name, 'champion', new_champion.version
         )
@@ -218,6 +241,32 @@ def evaluate_experience(
     response = {
         'statusCode': 200,
         'body': json.dumps({}),
+    }
+
+    return response
+
+
+
+def lambda_handler(event, context):
+
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    TRACKING_SERVER_URI = os.getenv(
+        'TRACKING_SERVER_URI', 'http://mlflow_ui:5000'
+    )
+    mlflow.set_tracking_uri(TRACKING_SERVER_URI)
+
+    # TODO: those should be deduced from the event dictionnary
+    MODEL_NAME = os.getenv('MODEL_NAME', 'belo-horizonte-estate-pricing')
+
+    inputs = json.loads(event['body'])
+    prediction = predict(MODEL_NAME, inputs)
+    price = prediction[0]
+
+    response = {
+        'statusCode': 200,
+        'body': json.dumps({'predicted_price': price}),
     }
 
     return response
