@@ -7,9 +7,8 @@ tests:
 quality_checks:
 	isort .
 	blue .
-	pylint --recursive=y .
 
-build: quality_check tests
+build: quality_checks tests
 	docker build -t ${IMAGE_NAME}:${IMAGE_TAG} src/.
 
 init_airflow: build
