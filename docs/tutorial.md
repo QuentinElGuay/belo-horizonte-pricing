@@ -119,6 +119,19 @@ poetry run pytest
 poetry run blue .
 poetry run isort .
 ```
+3. I use `pylint` as a linter (but yet have to finish cleaning my code):
+```
+poetry run pylint src/.
+```
+4. A few pre-commit hooks are activated
+```
+poetry run pre-commit install
+pre-commit
+```
+5. Finally, I created a simple Make file to build the docker image and initialize Airflow:
+```
+make init_airflow
+```
 
 ## 5. Cleaning up the environment
 Alright, this is it. I hope you had fun with my project.

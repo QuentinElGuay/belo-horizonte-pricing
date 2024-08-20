@@ -115,7 +115,7 @@ This project was developped for the [DataTalks.Club MLOps Zoomcamp course](https
 - [ ] There is an integration test (1 point)
 - [x] Linter and/or code formatter are used (1 point)
     - Execute `poetry run blue .` to use the [blue code formatter](https://pypi.org/project/blue/).
-    - Execute `poetry run isort .` to use the `isort`.
+    - Execute `poetry run isort .` to use the `isort` tool.
     - Execute `poetry run pylint /src` to use the linter (my code has been rated at 7.50/10, there is still work to do).
 - [X] There's a Makefile (1 point)
     - Quite simple but I use it to initialize Airflow.
