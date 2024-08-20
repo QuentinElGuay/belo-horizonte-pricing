@@ -26,13 +26,16 @@ isort = "^5.13.2"
 apache-airflow = "^2.10.0"
 pylint = "^3.2.6"
 pre-commit = "^3.8.0"
+moto = "^5.0.13"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3.2"
 
-
-[tool.poetry.group.lambda.dependencies]
-awswrangler = "^3.9.0"
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning"
+]
 
 [build-system]
 requires = ["poetry-core"]
